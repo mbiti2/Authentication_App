@@ -57,6 +57,8 @@ async fn main() {
         ])),
     };
 
+    println!("{:?}", state);
+    
     let app = Router::new()
         .route("/admin", get(protected::admin_route))
         .route("/admin/dashboard", get(protected::admin_dashboard))
@@ -68,6 +70,7 @@ async fn main() {
         .route("/register", post(auth::register))
         .layer(CorsLayer::permissive())
         .with_state(state);
+
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
