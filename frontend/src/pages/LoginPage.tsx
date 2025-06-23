@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -65,6 +64,7 @@ const LoginPage = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
+                autoComplete="email"
                 {...register('email')}
                 className={errors.email ? 'border-red-500' : ''}
               />
@@ -80,6 +80,7 @@ const LoginPage = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
+                  autoComplete="current-password"
                   {...register('password')}
                   className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
                 />
