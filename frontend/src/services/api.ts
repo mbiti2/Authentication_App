@@ -123,7 +123,7 @@ const register = async (email: string, password: string, firstName: string, last
 };
 
 const getProfile = async (): Promise<User> => {
-  const response: AxiosResponse<User> = await apiClient.get('/profile');
+  const response: AxiosResponse<User> = await apiClient.get('/user/profile');
   return response.data;
 };
 
