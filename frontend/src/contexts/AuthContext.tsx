@@ -22,18 +22,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [sessionTimer, setSessionTimer] = useState<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
 
+  const logout = useCallback(() => {
+    authApi.clearTokens();
+    setUser(null);
+    setSessionTimer(prevTimer => {
+      if (prevTimer) clearTimeout(prevTimer);
+      return null;
+    });
+    navigate('/login');
+  }, [navigate]);
+
   // Reset session timer on user activity
   const resetSessionTimer = useCallback(() => {
-    if (sessionTimer) {
-      clearTimeout(sessionTimer);
-    }
-
-    const newTimer = setTimeout(() => {
-      logout();
-    }, SESSION_TIMEOUT);
-
-    setSessionTimer(newTimer);
-  }, [sessionTimer]);
+    setSessionTimer(prevTimer => {
+      if (prevTimer) {
+        clearTimeout(prevTimer);
+      }
+      return setTimeout(() => {
+        logout();
+      }, SESSION_TIMEOUT);
+    });
+  }, [logout]);
 
   // Setup activity listeners for session management
   useEffect(() => {
@@ -102,16 +111,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
     }
   };
-
-  const logout = useCallback(() => {
-    authApi.clearTokens();
-    setUser(null);
-    if (sessionTimer) {
-      clearTimeout(sessionTimer);
-      setSessionTimer(null);
-    }
-    navigate('/login');
-  }, [navigate, sessionTimer]);
 
   const value = {
     user,
