@@ -123,7 +123,7 @@ const register = async (email: string, password: string, firstName: string, last
 };
 
 const getProfile = async (): Promise<User> => {
-  const response: AxiosResponse<User> = await apiClient.get('/auth/profile');
+  const response: AxiosResponse<User> = await apiClient.get('/profile');
   return response.data;
 };
 
@@ -133,7 +133,7 @@ const refreshAccessToken = async (): Promise<{ access_token: string }> => {
     throw new Error('No refresh token available');
   }
 
-  const response: AxiosResponse<{ access_token: string }> = await apiClient.post('/auth/refresh', {
+  const response: AxiosResponse<{ access_token: string }> = await apiClient.post('/refresh', {
     refresh_token: refreshToken,
   });
 
