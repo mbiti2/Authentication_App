@@ -56,8 +56,6 @@ async fn main() {
             }
         ])),
     };
-
-    println!("{:?}", state);
     
     let app = Router::new()
         .route("/admin", get(protected::admin_route))

@@ -71,6 +71,7 @@ const RegisterPage = () => {
                 id="firstName"
                 type="text"
                 placeholder="Enter your first name"
+                autoComplete="given-name"
                 {...register('firstName')}
                 className={errors.firstName ? 'border-red-500' : ''}
               />
@@ -85,6 +86,7 @@ const RegisterPage = () => {
                 id="lastName"
                 type="text"
                 placeholder="Enter your last name"
+                autoComplete="family-name"
                 {...register('lastName')}
                 className={errors.lastName ? 'border-red-500' : ''}
               />
@@ -99,6 +101,7 @@ const RegisterPage = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
+                autoComplete="email"
                 {...register('email')}
                 className={errors.email ? 'border-red-500' : ''}
               />
@@ -114,6 +117,7 @@ const RegisterPage = () => {
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
+                  autoComplete="new-password"
                   {...register('password')}
                   className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
                 />
@@ -137,6 +141,7 @@ const RegisterPage = () => {
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
+                  autoComplete="new-password"
                   {...register('confirmPassword')}
                   className={errors.confirmPassword ? 'border-red-500 pr-10' : 'pr-10'}
                 />
