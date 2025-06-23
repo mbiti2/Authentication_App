@@ -103,6 +103,7 @@ const login = async (email: string, password: string): Promise<LoginResponse> =>
     email,
     password,
   });
+  console.log('Raw API response:', response.data);
   const { access_token, refresh_token } = response.data;
   setTokens(access_token, refresh_token);
   return response.data;
@@ -122,10 +123,14 @@ const register = async (email: string, password: string, firstName: string, last
   return response.data;
 };
 
-const getProfile = async (): Promise<User> => {
-  const response: AxiosResponse<User> = await apiClient.get('/user/profile');
-  return response.data;
+// in api.ts
+export const getUserProfile = async (token: string) => {
+  const res = await axios.get(`${API_BASE_URL}/user/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
 };
+
 
 const refreshAccessToken = async (): Promise<{ access_token: string }> => {
   const refreshToken = getRefreshToken();
@@ -144,7 +149,7 @@ const refreshAccessToken = async (): Promise<{ access_token: string }> => {
 export const authApi = {
   login,
   register,
-  getProfile,
+  getUserProfile,
   refreshAccessToken,
   getAccessToken,
   getRefreshToken,

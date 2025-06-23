@@ -55,7 +55,27 @@ pub async fn login(
     )
     .unwrap();
 
-    return (StatusCode::OK, Json(LoginResponse { token })).into_response();
+    // Simulate refresh token (not implemented)
+    let refresh_token = "dummy_refresh_token";
+
+    // Return user info (excluding password)
+    let user_info = json!({
+        "id": user.unwrap().id,
+        "email": user.unwrap().email,
+        "first_name": user.unwrap().first_name,
+        "last_name": user.unwrap().last_name,
+        "role": format!("{:?}", user.unwrap().role)
+    });
+
+    return (
+        StatusCode::OK,
+        Json(json!({
+            "access_token": token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+            "user": user_info
+        }))
+    ).into_response();
 }
 
 #[utoipa::path(

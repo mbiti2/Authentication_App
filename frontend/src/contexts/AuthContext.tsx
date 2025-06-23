@@ -2,7 +2,13 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '@/services/api';
 import { User } from '@/types/auth';
+import { jwtDecode } from "jwt-decode";
 
+interface DecodedToken {
+  sub: string;
+  role: string;
+  exp: number;
+}
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
@@ -72,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token = authApi.getAccessToken();
         if (token) {
-          const userProfile = await authApi.getProfile();
+          const userProfile = await authApi.getUserProfile(token);
           setUser(userProfile);
         }
       } catch (error) {
@@ -86,13 +92,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
+
   const login = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await authApi.login(email, password);
-      setUser(response.user);
+      console.log('Login response:', response);
+      console.log('Response keys:', Object.keys(response));
+      
+      // Handle both possible response structures
+      const token = (response as any).access_token || (response as any).token;
+      console.log('Token:', token);
+      
+      if (!token) {
+        throw new Error('No token received from login response');
+      }
+  
+      localStorage.setItem("token", token);
+  
+      const decoded: DecodedToken = jwtDecode(token);
+      console.log('Decoded token:', decoded);
+  
+      // Optionally, fetch full user info from protected route
+      const userInfo = await authApi.getUserProfile(token); // from /user/profile
+      setUser(userInfo); // { id, email, first_name, last_name, role }
+      
       navigate('/profile');
     } catch (error) {
+      console.error("Login error:", error);
       throw error;
     } finally {
       setIsLoading(false);
@@ -120,6 +147,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     isAuthenticated: !!user,
   };
+
+  console.log('AuthContext value:', { user, isAuthenticated: !!user, isLoading });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -1,6 +1,7 @@
 use bcrypt::{hash_with_salt, DEFAULT_COST};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
+use serde_json;
 
 #[derive(Debug, Serialize, Deserialize, ToSchema, Clone, PartialEq)]
 pub enum Role {
@@ -41,5 +42,8 @@ pub struct LoginRequest {
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct LoginResponse {
-    pub token: String,
+    pub access_token: String,
+    pub refresh_token: String,
+    pub token_type: String,
+    pub user: serde_json::Value,
 }

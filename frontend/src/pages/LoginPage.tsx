@@ -33,9 +33,13 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
+      console.log('Login form submitted with data:', data);
       setError('');
+      console.log('Calling login function...');
       await login(data.email, data.password);
+      console.log('Login function completed successfully');
     } catch (err: any) {
+      console.error('Login error:', err);
       setError(err.response?.data?.detail || 'Login failed. Please try again.');
     }
   };
