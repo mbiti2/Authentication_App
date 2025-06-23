@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const SESSION_TIMEOUT = 10 * 60 * 1000; // 10 minutes in milliseconds
+const SESSION_TIMEOUT = Number(import.meta.env.VITE_SESSION_TIMEOUT_MS) || 10 * 60 * 1000; // Configurable via env
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
