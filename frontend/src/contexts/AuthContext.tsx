@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '@/services/api';
@@ -7,7 +6,7 @@ import { User } from '@/types/auth';
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, fullName: string) => Promise<void>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -91,10 +90,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, fullName: string) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       setIsLoading(true);
-      const response = await authApi.register(email, password, fullName);
+      const response = await authApi.register(email, password, firstName, lastName);
       setUser(response.user);
       navigate('/profile');
     } catch (error) {

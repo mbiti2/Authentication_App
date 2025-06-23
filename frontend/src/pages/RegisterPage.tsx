@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -13,7 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 const registerSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
@@ -41,7 +41,7 @@ const RegisterPage = () => {
   const onSubmit = async (data: RegisterForm) => {
     try {
       setError('');
-      await registerUser(data.email, data.password, data.fullName);
+      await registerUser(data.email, data.password, data.firstName, data.lastName);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
     }
@@ -66,16 +66,30 @@ const RegisterPage = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="firstName">First Name</Label>
               <Input
-                id="fullName"
+                id="firstName"
                 type="text"
-                placeholder="Enter your full name"
-                {...register('fullName')}
-                className={errors.fullName ? 'border-red-500' : ''}
+                placeholder="Enter your first name"
+                {...register('firstName')}
+                className={errors.firstName ? 'border-red-500' : ''}
               />
-              {errors.fullName && (
-                <p className="text-sm text-red-500">{errors.fullName.message}</p>
+              {errors.firstName && (
+                <p className="text-sm text-red-500">{errors.firstName.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Enter your last name"
+                {...register('lastName')}
+                className={errors.lastName ? 'border-red-500' : ''}
+              />
+              {errors.lastName && (
+                <p className="text-sm text-red-500">{errors.lastName.message}</p>
               )}
             </div>
 

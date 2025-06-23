@@ -115,10 +115,7 @@ const login = async (email: string, password: string): Promise<LoginResponse> =>
   return response.data;
 };
 
-const register = async (email: string, password: string, fullName: string): Promise<RegisterResponse> => {
-  // Split fullName into first and last name
-  const [firstName, ...rest] = fullName.trim().split(' ');
-  const lastName = rest.join(' ');
+const register = async (email: string, password: string, firstName: string, lastName: string): Promise<RegisterResponse> => {
   const response: AxiosResponse<RegisterResponse> = await apiClient.post('/auth/register', {
     email,
     password,
