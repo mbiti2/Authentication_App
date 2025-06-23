@@ -1,9 +1,9 @@
 export interface User {
-  id: string;
+  id: number;
   email: string;
-  full_name: string;
-  is_active: boolean;
-  created_at: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 export interface LoginRequest {

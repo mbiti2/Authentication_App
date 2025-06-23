@@ -18,11 +18,11 @@ interface RegisterResponse {
 }
 
 interface User {
-  id: string;
+  id: number;
   email: string;
-  full_name: string;
-  is_active: boolean;
-  created_at: string;
+  first_name: string;
+  last_name: string;
+  role: string;
 }
 
 // Create axios instance
@@ -99,24 +99,17 @@ const clearTokens = (): void => {
 
 // API functions
 const login = async (email: string, password: string): Promise<LoginResponse> => {
-  const formData = new FormData();
-  formData.append('username', email);
-  formData.append('password', password);
-
-  const response: AxiosResponse<LoginResponse> = await apiClient.post('/auth/login', formData, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+  const response: AxiosResponse<LoginResponse> = await apiClient.post('/login', {
+    email,
+    password,
   });
-
   const { access_token, refresh_token } = response.data;
   setTokens(access_token, refresh_token);
-
   return response.data;
 };
 
 const register = async (email: string, password: string, firstName: string, lastName: string): Promise<RegisterResponse> => {
-  const response: AxiosResponse<RegisterResponse> = await apiClient.post('/auth/register', {
+  const response: AxiosResponse<RegisterResponse> = await apiClient.post('/register', {
     email,
     password,
     first_name: firstName,

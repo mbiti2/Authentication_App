@@ -6,7 +6,7 @@ use serde_json::json;
 use utoipa::OpenApi;
 
 use crate::middleware::auth::Claims;
-use crate::models::{LoginRequest, LoginResponse, Role, RegisterRequest};
+use crate::models::{LoginRequest, LoginResponse, RegisterRequest, Role};
 use crate::AppState;
 
 const JWT_SALT: &[u8; 16] = b"your-salt-valuee"; // Use a secure key in production
@@ -72,7 +72,11 @@ pub async fn register(
     Json(payload): Json<crate::models::RegisterRequest>,
 ) -> impl IntoResponse {
     // In production, save to a database
-    if payload.email.is_empty() || payload.password.is_empty() || payload.first_name.is_empty() || payload.last_name.is_empty() {
+    if payload.email.is_empty()
+        || payload.password.is_empty()
+        || payload.first_name.is_empty()
+        || payload.last_name.is_empty()
+    {
         return (
             StatusCode::BAD_REQUEST,
             Json(json!({"error": "First name, last name, email, and password are required"})),
@@ -93,19 +97,48 @@ pub async fn register(
 
     let new_user = crate::models::User {
         id: users.len() as i32 + 1, // Simple ID generation
-        email: payload.email,
-        first_name: payload.first_name,
-        last_name: payload.last_name,
+        email: payload.email.clone(),
+        first_name: payload.first_name.clone(),
+        last_name: payload.last_name.clone(),
         password: hashed_password.to_string(),
         role: Role::User,
     };
 
-    users.push(new_user);
+    users.push(new_user.clone());
 
-    // Simulate successful registration
+    // Generate JWT token for the new user
+    let claims = Claims {
+        sub: new_user.email.clone(),
+        role: new_user.role.clone(),
+        exp: (chrono::Utc::now() + chrono::Duration::hours(24)).timestamp() as usize,
+    };
+    let token = encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(config.jwt_secret.as_ref()),
+    )
+    .unwrap();
+
+    // Simulate refresh token (not implemented)
+    let refresh_token = "dummy_refresh_token";
+
+    // Return user info (excluding password)
+    let user_info = json!({
+        "id": new_user.id,
+        "email": new_user.email,
+        "first_name": new_user.first_name,
+        "last_name": new_user.last_name,
+        "role": format!("{:?}", new_user.role)
+    });
+
     (
         StatusCode::CREATED,
-        Json(json!({"message": "User registered successfully"})),
+        Json(json!({
+            "access_token": token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+            "user": user_info
+        })),
     )
         .into_response()
 }
