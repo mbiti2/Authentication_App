@@ -1,20 +1,15 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
-import { useNavigate } from "react-router-dom";
-import { authApi } from "@/services/api";
-import { User } from "@/types/auth";
-import { jwtDecode } from "jwt-decode";
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '@/services/api';
+import { User } from '@/types/auth';
+import { jwtDecode} from "jwt-decode";
 
 interface DecodedToken {
   sub: string;
   role: string;
   exp: number;
 }
+
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string, isAdmin?: boolean) => Promise<void>;
@@ -28,16 +23,13 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   getAccessToken: () => string | null;
-}
+}    
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const SESSION_TIMEOUT =
-  Number(import.meta.env.VITE_SESSION_TIMEOUT_MS) || 10 * 60 * 1000; // Configurable via env
+const SESSION_TIMEOUT = Number(import.meta.env.VITE_SESSION_TIMEOUT_MS) || 10 * 60 * 1000; // Configurable via env
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sessionTimer, setSessionTimer] = useState<NodeJS.Timeout | null>(null);
@@ -46,11 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = useCallback(() => {
     authApi.clearTokens();
     setUser(null);
-    setSessionTimer((prevTimer) => {
-      if (prevTimer) clearTimeout(prevTimer);
-      return null;
-    });
-    navigate("/login");
+    navigate('/login');
   }, [navigate]);
 
   // Reset session timer on user activity
@@ -68,27 +56,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Setup activity listeners for session management
   useEffect(() => {
     if (user) {
-      const events = [
-        "mousedown",
-        "mousemove",
-        "keypress",
-        "scroll",
-        "touchstart",
-      ];
-
-      events.forEach((event) => {
+      const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+      events.forEach(event => {
         document.addEventListener(event, resetSessionTimer, true);
       });
-
       resetSessionTimer();
-
       return () => {
-        events.forEach((event) => {
+        events.forEach(event => {
           document.removeEventListener(event, resetSessionTimer, true);
         });
-        if (sessionTimer) {
-          clearTimeout(sessionTimer);
-        }
+        // Only clear the timer, don't depend on sessionTimer
+        setSessionTimer(prevTimer => {
+          if (prevTimer) clearTimeout(prevTimer);
+          return null;
+        });
       };
     }
   }, [user, resetSessionTimer]);
@@ -99,11 +80,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const token = authApi.getAccessToken();
         if (token) {
-          const userProfile = await authApi.getUserProfile(token);
+          const userProfile = await authApi.getUserProfile();
           setUser(userProfile);
         }
       } catch (error) {
-        console.error("Failed to initialize auth:", error);
+        console.error('Failed to initialize auth:', error);
         authApi.clearTokens();
       } finally {
         setIsLoading(false);
@@ -151,28 +132,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const register = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string
-  ) => {
+  const register = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       setIsLoading(true);
-      const response = await authApi.register(
-        email,
-        password,
-        firstName,
-        lastName
-      );
+      const response = await authApi.register(email, password, firstName, lastName);
       setUser(response.user);
-      navigate("/profile");
+      navigate('/profile');
     } catch (error) {
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const value = {
     user,
@@ -181,14 +153,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     logout,
     isLoading,
     isAuthenticated: !!user,
-    getAccessToken: authApi.getAccessToken,
+    getAccessToken: authApi.getAccessToken
   };
-
-  console.log("AuthContext value:", {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-  });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
@@ -196,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

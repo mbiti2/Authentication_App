@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, LogOut } from "lucide-react";
 
 const schema = z.object({
   email: z.string().email(),
@@ -25,7 +25,7 @@ const AdminRegisterPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
-  const { getAccessToken } = useAuth();
+  const { getAccessToken, logout } = useAuth();
 
   const {
     register,
@@ -54,8 +54,14 @@ const AdminRegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 relative">
+      <button
+        onClick={logout}
+        className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-4 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200"
+      >
+        <LogOut size={16} /> Logout
+      </button>
+      <Card className="w-full max-w-md mt-12">
         <CardHeader>
           <CardTitle className="text-2xl">Register New Admin</CardTitle>
           <CardDescription>Only accessible to admins</CardDescription>

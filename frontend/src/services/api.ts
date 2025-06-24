@@ -131,17 +131,13 @@ export const registerAdmin = async (data: any, token: string) => {
 };
 
 // in api.ts
-export const getUserProfile = async (token: string) => {
-  const res = await apiClient.get('/user/profile', {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getUserProfile = async () => {
+  const res = await apiClient.get('/user/profile');
   return res.data;
 };
 
-export const getAdminDashboard = async (token: string) => {
-  const response = await apiClient.get('/admin/dashboard', {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+export const getAdminDashboard = async () => {
+  const response = await apiClient.get('/admin/dashboard');
   return response.data;
 };
 
