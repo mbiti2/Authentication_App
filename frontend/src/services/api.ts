@@ -130,23 +130,20 @@ export const registerAdmin = async (data: any, token: string) => {
   return response.data;
 };
 
-
 // in api.ts
 export const getUserProfile = async (token: string) => {
-  const res = await axios.get(`${API_BASE_URL}/user/profile`, {
+  const res = await apiClient.get('/user/profile', {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
 };
 
 export const getAdminDashboard = async (token: string) => {
-  const response = await axios.get('/admin/dashboard', {
+  const response = await apiClient.get('/admin/dashboard', {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 };
-
-
 
 const refreshAccessToken = async (): Promise<{ access_token: string }> => {
   const refreshToken = getRefreshToken();

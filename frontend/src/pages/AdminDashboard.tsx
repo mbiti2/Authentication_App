@@ -28,16 +28,20 @@ const AdminDashboard = () => {
       <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
       {dashboardData ? (
         <div>
-          <p className="mb-2">User count: {dashboardData.user_count}</p>
-          <ul className="space-y-2">
-            {dashboardData.users.map((user: any) => (
-              <li key={user.id} className="border p-2 rounded">
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
-                <p><strong>Role:</strong> {user.role}</p>
-              </li>
-            ))}
-          </ul>
+          <p className="mb-2">User count: {dashboardData.user_count || 0}</p>
+          {dashboardData.users && Array.isArray(dashboardData.users) ? (
+            <ul className="space-y-2">
+              {dashboardData.users.map((user: any) => (
+                <li key={user.id} className="border p-2 rounded">
+                  <p><strong>Email:</strong> {user.email}</p>
+                  <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
+                  <p><strong>Role:</strong> {user.role}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No users found or invalid data format</p>
+          )}
         </div>
       ) : (
         <p>Loading dashboard...</p>

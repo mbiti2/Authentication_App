@@ -118,28 +118,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await authApi.login(email, password, isAdmin);
       console.log("Login response:", response);
       console.log("Response keys:", Object.keys(response));
-
+      
       // Handle both possible response structures
       const token = (response as any).access_token || (response as any).token;
       console.log("Token:", token);
-
+      
       if (!token) {
         throw new Error("No token received from login response");
       }
-
+  
       localStorage.setItem("token", token);
-
+  
       const decoded: DecodedToken = jwtDecode(token);
       console.log("Decoded token:", decoded);
-
-      // Optionally, fetch full user info from protected route
-      const userInfo = isAdmin
-        ? await authApi.getAdminDashboard(token)
-        : await authApi.getUserProfile(token);
-
-      setUser(userInfo); // { id, email, first_name, last_name, role }
-
-      navigate("/profile");
+  
+      // Use the user data from the login response instead of making a separate API call
+      const userInfo = response.user;
+      console.log("User info from response:", userInfo);
+      setUser(userInfo);
+      
+      if (isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/profile");
+      }
     } catch (error) {
       console.error("Login error:", error);
       throw error;
