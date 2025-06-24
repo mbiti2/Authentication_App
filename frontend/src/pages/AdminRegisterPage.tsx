@@ -38,18 +38,17 @@ const AdminRegisterPage = () => {
     setError("");
     setSuccess("");
     try {
-      const token = getAccessToken();
-      if (!token) {
-        setError("No authentication token found. Please log in again.");
-        return;
-      }
-      
-      await authApi.registerAdmin(data, token);
+      await authApi.registerAdmin({
+        email: data.email,
+        password: data.password,
+        first_name: data.firstName,
+        last_name: data.lastName
+      });
       setSuccess("Admin registered successfully.");
       reset();
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error || err.response?.data?.detail || "Registration failed");
+      setError(err.response?.data?.error || "Registration failed");
     }
   };
 
