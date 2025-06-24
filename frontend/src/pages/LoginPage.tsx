@@ -52,18 +52,16 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-100 via-blue-300 to-blue-900">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl backdrop-blur bg-white/80">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Sign In
-          </CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-3xl font-extrabold text-center text-blue-900">Sign In</CardTitle>
+          <CardDescription className="text-center text-blue-700">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -72,14 +70,14 @@ const LoginPage = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-blue-900 font-semibold">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Enter your email"
                 autoComplete="email"
                 {...register("email")}
-                className={errors.email ? "border-red-500" : ""}
+                className={`rounded-lg focus:ring-2 focus:ring-blue-400 ${errors.email ? "border-red-500" : ""}`}
               />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -87,7 +85,7 @@ const LoginPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-blue-900 font-semibold">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -95,20 +93,18 @@ const LoginPage = () => {
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   {...register("password")}
-                  className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                  className={`rounded-lg pr-10 focus:ring-2 focus:ring-blue-400 ${errors.password ? "border-red-500" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-700 transition-colors"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-sm text-red-500">
-                  {errors.password.message}
-                </p>
+                <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
             </div>
 
@@ -118,20 +114,18 @@ const LoginPage = () => {
                 id="admin"
                 checked={isAdmin}
                 onChange={() => setIsAdmin(!isAdmin)}
-                className="cursor-pointer"
+                className="cursor-pointer accent-blue-600"
               />
-              <label htmlFor="admin" className="cursor-pointer text-sm">
-                Log in as Admin
-              </label>
+              <label htmlFor="admin" className="cursor-pointer text-sm text-blue-900">Log in as Admin</label>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200" disabled={isLoading}>
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
 
-            <div className="text-center text-sm">
+            <div className="text-center text-sm text-blue-900">
               Don't have an account?{" "}
-              <Link to="/register" className="text-primary hover:underline">
+              <Link to="/register" className="text-blue-700 hover:underline font-semibold">
                 Sign up
               </Link>
             </div>
