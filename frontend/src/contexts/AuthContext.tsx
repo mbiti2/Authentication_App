@@ -27,6 +27,7 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  getAccessToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -180,6 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     logout,
     isLoading,
     isAuthenticated: !!user,
+    getAccessToken: authApi.getAccessToken,
   };
 
   console.log("AuthContext value:", {

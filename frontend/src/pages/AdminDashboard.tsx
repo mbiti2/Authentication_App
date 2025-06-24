@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { authApi } from '@/services/api';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -25,20 +27,29 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <Link to="/admin/register">
+          <Button>Register New Admin</Button>
+        </Link>
+      </div>
+      
       {dashboardData ? (
         <div>
-          <p className="mb-2">User count: {dashboardData.user_count || 0}</p>
+          <p className="mb-4 text-lg">User count: {dashboardData.user_count || 0}</p>
           {dashboardData.users && Array.isArray(dashboardData.users) ? (
-            <ul className="space-y-2">
-              {dashboardData.users.map((user: any) => (
-                <li key={user.id} className="border p-2 rounded">
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
-                  <p><strong>Role:</strong> {user.role}</p>
-                </li>
-              ))}
-            </ul>
+            <div>
+              <h2 className="text-xl font-semibold mb-3">All Users</h2>
+              <ul className="space-y-2">
+                {dashboardData.users.map((user: any) => (
+                  <li key={user.id} className="border p-3 rounded-lg shadow-sm">
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Name:</strong> {user.first_name} {user.last_name}</p>
+                    <p><strong>Role:</strong> {user.role}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ) : (
             <p>No users found or invalid data format</p>
           )}

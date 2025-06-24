@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { authApi } from "@/services/api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ const AdminRegisterPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const { getAccessToken } = useAuth();
 
   const {
     register,
@@ -36,13 +38,18 @@ const AdminRegisterPage = () => {
     setError("");
     setSuccess("");
     try {
-      const token = localStorage.getItem("token");
-      await authApi.registerAdmin(data, token!);
+      const token = getAccessToken();
+      if (!token) {
+        setError("No authentication token found. Please log in again.");
+        return;
+      }
+      
+      await authApi.registerAdmin(data, token);
       setSuccess("Admin registered successfully.");
       reset();
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.detail || "Registration failed");
+      setError(err.response?.data?.error || err.response?.data?.detail || "Registration failed");
     }
   };
 

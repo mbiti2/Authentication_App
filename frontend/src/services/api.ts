@@ -124,7 +124,7 @@ const register = async (email: string, password: string, firstName: string, last
 };
 
 export const registerAdmin = async (data: any, token: string) => {
-  const response = await axios.post("/admin/register", data, {
+  const response = await apiClient.post("/admin/register", data, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
