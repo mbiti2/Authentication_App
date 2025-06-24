@@ -1,27 +1,34 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/contexts/AuthContext';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const { login, isLoading } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const {
     register,
@@ -33,14 +40,14 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      console.log('Login form submitted with data:', data);
-      setError('');
-      console.log('Calling login function...');
-      await login(data.email, data.password);
-      console.log('Login function completed successfully');
+      console.log("Login form submitted with data:", data);
+      setError("");
+      console.log("Calling login function...");
+      await login(data.email, data.password, isAdmin);
+      console.log("Login function completed successfully");
     } catch (err: any) {
-      console.error('Login error:', err);
-      setError(err.response?.data?.detail || 'Login failed. Please try again.');
+      console.error("Login error:", err);
+      setError(err.response?.data?.detail || "Login failed. Please try again.");
     }
   };
 
@@ -48,7 +55,9 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Sign In
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access your account
           </CardDescription>
@@ -69,8 +78,8 @@ const LoginPage = () => {
                 type="email"
                 placeholder="Enter your email"
                 autoComplete="email"
-                {...register('email')}
-                className={errors.email ? 'border-red-500' : ''}
+                {...register("email")}
+                className={errors.email ? "border-red-500" : ""}
               />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -82,11 +91,11 @@ const LoginPage = () => {
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  {...register('password')}
-                  className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                  {...register("password")}
+                  className={errors.password ? "border-red-500 pr-10" : "pr-10"}
                 />
                 <button
                   type="button"
@@ -97,16 +106,31 @@ const LoginPage = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="admin"
+                checked={isAdmin}
+                onChange={() => setIsAdmin(!isAdmin)}
+                className="cursor-pointer"
+              />
+              <label htmlFor="admin" className="cursor-pointer text-sm">
+                Log in as Admin
+              </label>
+            </div>
+
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? "Signing In..." : "Sign In"}
             </Button>
 
             <div className="text-center text-sm">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link to="/register" className="text-primary hover:underline">
                 Sign up
               </Link>

@@ -1,4 +1,3 @@
-use bcrypt::{hash_with_salt, DEFAULT_COST};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use serde_json;

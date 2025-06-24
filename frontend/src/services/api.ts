@@ -98,7 +98,7 @@ const clearTokens = (): void => {
 };
 
 // API functions
-const login = async (email: string, password: string): Promise<LoginResponse> => {
+const login = async (email: string, password: string, isAdmin = false): Promise<LoginResponse> => {
   const response: AxiosResponse<LoginResponse> = await apiClient.post('/login', {
     email,
     password,
@@ -123,6 +123,14 @@ const register = async (email: string, password: string, firstName: string, last
   return response.data;
 };
 
+export const registerAdmin = async (data: any, token: string) => {
+  const response = await axios.post("/admin/register", data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
+
 // in api.ts
 export const getUserProfile = async (token: string) => {
   const res = await axios.get(`${API_BASE_URL}/user/profile`, {
@@ -130,6 +138,14 @@ export const getUserProfile = async (token: string) => {
   });
   return res.data;
 };
+
+export const getAdminDashboard = async (token: string) => {
+  const response = await axios.get('/admin/dashboard', {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
+
 
 
 const refreshAccessToken = async (): Promise<{ access_token: string }> => {
@@ -150,10 +166,12 @@ export const authApi = {
   login,
   register,
   getUserProfile,
+  getAdminDashboard,
   refreshAccessToken,
   getAccessToken,
   getRefreshToken,
   clearTokens,
+  registerAdmin
 };
 
 export type { User, LoginResponse, RegisterResponse };

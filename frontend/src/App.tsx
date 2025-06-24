@@ -9,6 +9,8 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminRegisterPage from "./pages/AdminRegisterPage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/register" element={<AdminRegisterPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
