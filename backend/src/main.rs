@@ -2,8 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use axum::{
     routing::{get, post},
-    Router,
-    Extension,
+    Extension, Router,
 };
 use tower_http::cors::CorsLayer;
 use utoipa::OpenApi;
@@ -16,9 +15,9 @@ pub mod utils;
 
 use crate::{
     middleware::auth::auth_middleware,
+    models::{Role, User},
     routes::{auth, protected},
     utils::load_env,
-    models::{User, Role},
 };
 use bcrypt;
 
@@ -51,23 +50,24 @@ async fn main() {
 
     let state = AppState {
         config: Arc::new(load_env()),
-        users: Arc::new(Mutex::new(vec![
-            User {
-                id: 1,
-                email: "admin@example.com".to_string(),
-                first_name: "Admin".to_string(),
-                last_name: "User".to_string(),
-                password: bcrypt::hash("adminpassword", bcrypt::DEFAULT_COST).unwrap(),
-                role: Role::Admin,
-            }
-        ])),
+        users: Arc::new(Mutex::new(vec![User {
+            id: 1,
+            email: "admin@example.com".to_string(),
+            first_name: "Admin".to_string(),
+            last_name: "User".to_string(),
+            password: bcrypt::hash("adminpassword", bcrypt::DEFAULT_COST).unwrap(),
+            role: Role::Admin,
+        }])),
     };
-    
+
     let app = Router::new()
         .route("/admin/dashboard", get(protected::admin_dashboard))
         .route("/user/profile", get(protected::user_profile))
         .route("/admin/register", post(protected::register_admin))
-        .layer(axum::middleware::from_fn_with_state(state.clone(),auth_middleware))
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            auth_middleware,
+        ))
         .layer(Extension(state.users.clone()))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/login", post(auth::login))
