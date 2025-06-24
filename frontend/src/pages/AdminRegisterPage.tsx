@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, LogOut } from "lucide-react";
+import { HttpStatusCode } from "axios";
 
 const schema = z.object({
   email: z.string().email(),
@@ -46,9 +47,12 @@ const AdminRegisterPage = () => {
       });
       setSuccess("Admin registered successfully.");
       reset();
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || "Registration failed");
+    } catch (error: any) {
+      if (error.response.status === HttpStatusCode.Conflict) {
+        setError("Admin already exists");
+      } else {
+        setError("Registration failed");
+      }
     }
   };
 

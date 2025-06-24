@@ -1,10 +1,11 @@
 use std::sync::{Arc, Mutex};
 
 use axum::{
+    http::{header, Method},
     routing::{get, post},
     Extension, Router,
 };
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
@@ -60,6 +61,11 @@ async fn main() {
         }])),
     };
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
+
     let app = Router::new()
         .route("/admin/dashboard", get(protected::admin_dashboard))
         .route("/user/profile", get(protected::user_profile))
@@ -72,7 +78,7 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/login", post(auth::login))
         .route("/register", post(auth::register))
-        .layer(CorsLayer::permissive())
+        .layer(cors)
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

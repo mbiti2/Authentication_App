@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { HttpStatusCode } from 'axios';
 
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -42,8 +43,29 @@ const RegisterPage = () => {
     try {
       setError('');
       await registerUser(data.email, data.password, data.firstName, data.lastName);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+    } catch (error: any) {
+      console.log("--- START OF REGISTRATION ERROR ---");
+      console.log("Caught error object:", error);
+      if (error.response) {
+        console.log("error.response exists:", error.response);
+        if (error.response.data) {
+          console.log("error.response.data exists:", error.response.data);
+          if (error.response.data.error) {
+            console.log("error.response.data.error exists:", error.response.data.error);
+            setError(error.response.data.error);
+          } else {
+            console.log("error.response.data.error DOES NOT exist.");
+            setError("Registration failed. Please try again later.");
+          }
+        } else {
+          console.log("error.response.data DOES NOT exist.");
+          setError("Registration failed. Please try again later.");
+        }
+      } else {
+        console.log("error.response DOES NOT exist.");
+        setError("Registration failed. Please try again later.");
+      }
+      console.log("--- END OF REGISTRATION ERROR ---");
     }
   };
 
