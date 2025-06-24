@@ -25,6 +25,13 @@ interface User {
   role: string;
 }
 
+interface AdminRegisterRequest {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+}
+
 // Create axios instance
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -123,10 +130,8 @@ const register = async (email: string, password: string, firstName: string, last
   return response.data;
 };
 
-export const registerAdmin = async (data: any, token: string) => {
-  const response = await apiClient.post("/admin/register", data, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+export const registerAdmin = async (data: AdminRegisterRequest) => {
+  const response = await apiClient.post("/admin/register", data);
   return response.data;
 };
 
