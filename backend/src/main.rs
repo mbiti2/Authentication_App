@@ -33,12 +33,18 @@ async fn main() {
     #[derive(OpenApi)]
     #[openapi(
         info(title = "Auth API", description = "A simple auth API"),
-        paths(auth::login, auth::register, protected::admin_route, protected::admin_dashboard, protected::user_profile),
+        paths(auth::login, auth::register, protected::admin_dashboard, protected::register_admin, protected::user_profile),
+        tags(
+            (name = "auth", description = "Authentication routes"),
+            (name = "admin", description = "Admin routes"),
+            (name = "user", description = "User routes")
+        ),
         components(schemas(
             models::User,
             models::Role,
             models::LoginRequest,
-            models::LoginResponse
+            models::LoginResponse,
+            models::RegisterRequest
         ))
     )]
     struct ApiDoc;
@@ -58,9 +64,9 @@ async fn main() {
     };
     
     let app = Router::new()
-        .route("/admin", get(protected::admin_route))
         .route("/admin/dashboard", get(protected::admin_dashboard))
         .route("/user/profile", get(protected::user_profile))
+        .route("/admin/register", post(protected::register_admin))
         .layer(axum::middleware::from_fn_with_state(state.clone(),auth_middleware))
         .layer(Extension(state.users.clone()))
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))

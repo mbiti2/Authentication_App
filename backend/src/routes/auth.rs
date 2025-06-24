@@ -6,10 +6,8 @@ use serde_json::json;
 use utoipa::OpenApi;
 
 use crate::middleware::auth::Claims;
-use crate::models::{LoginRequest, LoginResponse, RegisterRequest, Role};
+use crate::models::{LoginRequest, LoginResponse, RegisterRequest, Role, User};
 use crate::AppState;
-
-const JWT_SALT: &[u8; 16] = b"your-salt-valuee"; // Use a secure key in production
 
 #[derive(OpenApi)]
 #[openapi(paths(login), components(schemas(LoginRequest, LoginResponse)))]
@@ -55,8 +53,76 @@ pub async fn login(
     )
     .unwrap();
 
-    return (StatusCode::OK, Json(LoginResponse { token })).into_response();
+    // Simulate refresh token (not implemented)
+    let refresh_token = "dummy_refresh_token";
+
+    // Return user info (excluding password)
+    let user_info = json!({
+        "id": user.unwrap().id,
+        "email": user.unwrap().email,
+        "first_name": user.unwrap().first_name,
+        "last_name": user.unwrap().last_name,
+        "role": format!("{:?}", user.unwrap().role)
+    });
+
+    return (
+        StatusCode::OK,
+        Json(json!({
+            "access_token": token,
+            "refresh_token": refresh_token,
+            "token_type": "bearer",
+            "user": user_info
+        }))
+    ).into_response();
 }
+
+#[utoipa::path(
+    post,
+    path = "/admin/register",
+    request_body = LoginRequest, // or a dedicated RegisterRequest
+    responses(
+        (status = 201, description = "Admin registered successfully", body = User),
+        (status = 403, description = "Forbidden")
+    ),
+    security(("api_key" = []))
+)]
+pub async fn register_admin(
+    State(state): State<AppState>,
+    Json(payload): Json<LoginRequest>, // consider creating a proper RegisterRequest
+) -> impl IntoResponse {
+    let mut users = state.users.lock().unwrap();
+    let user = users.iter().find(|u| u.email == payload.email);
+    if user.is_none() || user.unwrap().role != Role::Admin {
+        return (
+            StatusCode::FORBIDDEN,
+            Json(json!({ "error": "Admin access required" })),
+        )
+            .into_response();
+    }
+
+    if users.iter().any(|u| u.email == payload.email) {
+        return (
+            StatusCode::CONFLICT,
+            Json(json!({ "error": "Email already registered" })),
+        )
+            .into_response();
+    }
+
+    let hashed = bcrypt::hash(&payload.password, bcrypt::DEFAULT_COST).unwrap();
+    let new_user = User {
+        id: users.len() as i32 + 1,
+        email: payload.email.clone(),
+        first_name: "Admin".to_string(), // you'd want to pass these
+        last_name: "Account".to_string(),
+        password: hashed,
+        role: Role::Admin,
+    };
+
+    users.push(new_user.clone());
+
+    (StatusCode::CREATED, Json(new_user)).into_response()
+}
+
 
 #[utoipa::path(
     post,
