@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { HttpStatusCode } from 'axios';
 
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -29,6 +30,7 @@ const RegisterPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string>('');
   const { register: registerUser, isLoading } = useAuth();
+  const { logout } = useAuth();
 
   const {
     register,
@@ -43,7 +45,13 @@ const RegisterPage = () => {
       setError('');
       await registerUser(data.email, data.password, data.firstName, data.lastName);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      if (err.response.status === HttpStatusCode.Conflict) {
+        setError("Email already registered");
+      } else if (err.response.status === HttpStatusCode.Unauthorized) {
+        logout();
+      } else {
+        setError(err.response.data.detail || "Registration failed");
+      }
     }
   };
 

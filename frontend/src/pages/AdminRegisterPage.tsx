@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, LogOut } from "lucide-react";
+import { HttpStatusCode } from "axios";
 
 const schema = z.object({
   email: z.string().email(),
@@ -25,7 +26,7 @@ const AdminRegisterPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
-  const { getAccessToken, logout } = useAuth();
+  const { logout } = useAuth();
 
   const {
     register,
@@ -47,8 +48,13 @@ const AdminRegisterPage = () => {
       setSuccess("Admin registered successfully.");
       reset();
     } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.error || "Registration failed");
+      if (err.response.status === HttpStatusCode.Conflict) {
+        setError("Email already registered");
+      } else if (err.response.status === HttpStatusCode.Unauthorized) {
+        logout();
+      } else {
+        setError(err.response.data.detail || "Registration failed");
+      }
     }
   };
 
