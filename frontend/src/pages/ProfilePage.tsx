@@ -61,10 +61,6 @@ const ProfilePage = () => {
               <h3 className="font-semibold text-blue-900 mb-4">Account Information</h3>
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex justify-between items-center py-2 border-b border-blue-100">
-                  <span className="text-blue-700">User ID</span>
-                  <span className="font-mono text-sm bg-blue-100 px-2 py-1 rounded text-blue-900">{user.id}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-blue-100">
                   <span className="text-blue-700">Full Name</span>
                   <span>{user.first_name} {user.last_name}</span>
                 </div>
@@ -76,6 +72,11 @@ const ProfilePage = () => {
                   <span className="text-blue-700">Role</span>
                   <span>{user.role}</span>
                 </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200">
+                  Edit Profile
+                </button>
               </div>
             </div>
           </CardContent>
