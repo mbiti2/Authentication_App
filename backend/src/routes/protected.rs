@@ -4,7 +4,7 @@ use std::sync::Arc;
 use utoipa::OpenApi;
 
 use crate::middleware::auth::Claims;
-use crate::models::{RegisterRequest, Role, User};
+use crate::models::{RegisterRequest, Role, User, UpdateProfileRequest};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -157,5 +157,45 @@ pub async fn user_profile(
             Json(json!({"error": "User access required"})),
         )
             .into_response()
+    }
+}
+
+#[utoipa::path(
+    put,
+    path = "/user/profile",
+    request_body = UpdateProfileRequest,
+    responses(
+        (status = 200, description = "Profile updated", body = User),
+        (status = 404, description = "User not found"),
+        (status = 403, description = "Forbidden")
+    ),
+    security(("api_key" = []))
+)]
+pub async fn update_profile(
+    Extension(claims): Extension<Arc<Claims>>,
+    Extension(users): Extension<Arc<std::sync::Mutex<Vec<User>>>>,
+    Json(payload): Json<UpdateProfileRequest>,
+) -> impl IntoResponse {
+    let mut users = users.lock().unwrap();
+    if let Some(user) = users.iter_mut().find(|u| u.email == claims.sub) {
+        if let Some(first_name) = payload.first_name {
+            user.first_name = first_name;
+        }
+        if let Some(last_name) = payload.last_name {
+            user.last_name = last_name;
+        }
+        if let Some(email) = payload.email {
+            user.email = email;
+        }
+        let user_info = serde_json::json!({
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": format!("{:?}", user.role)
+        });
+        (StatusCode::OK, Json(user_info)).into_response()
+    } else {
+        (StatusCode::NOT_FOUND, Json(json!({"error": "User not found"}))).into_response()
     }
 }

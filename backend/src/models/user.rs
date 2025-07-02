@@ -46,3 +46,10 @@ pub struct LoginResponse {
     pub token_type: String,
     pub user: serde_json::Value,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateProfileRequest {
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub email: Option<String>,
+}
