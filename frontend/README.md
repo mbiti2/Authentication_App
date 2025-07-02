@@ -1,73 +1,82 @@
-# Welcome to your Lovable project
+# Authentication App
 
-## Project info
+A modern fullstack authentication app with admin and user dashboards, secure login, registration, and profile editing.
 
-**URL**: https://lovable.dev/projects/2d0fa523-89b2-4a55-a3f7-ce8d0c354ed5
+---
 
-## How can I edit this code?
+## Features
+- **User Registration & Login** (JWT-based)
+- **Admin & User Roles**
+- **Admin Dashboard**: View all users, register new admins
+- **Profile Page**: View and edit your profile
+- **Persistent Login**: Stay logged in on refresh
+- **Beautiful UI**: Tailwind CSS, shadcn-ui, and modern design
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## Tech Stack
+- **Backend:** Rust, Axum, utoipa (OpenAPI), bcrypt (password hashing)
+- **Frontend:** React, Vite, TypeScript, Tailwind CSS, shadcn-ui
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2d0fa523-89b2-4a55-a3f7-ce8d0c354ed5) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
+### 1. Clone the Repository
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+cd Authentication_App
 ```
 
-**Edit a file directly in GitHub**
+### 2. Backend Setup (Rust/Axum)
+```sh
+cd backend
+# Set up .env if needed (see .env.example)
+cargo run
+```
+- The backend runs on `http://localhost:3000` by default.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 3. Frontend Setup (React/Vite)
+```sh
+cd ../frontend
+npm install
+npm run dev
+```
+- The frontend runs on `http://localhost:8080` by default.
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Usage
 
-## What technologies are used for this project?
+### User
+- Register and log in as a user.
+- View your profile and edit your name or email.
 
-This project is built with:
+### Admin
+- Log in as an admin to access the admin dashboard.
+- View all users, register new admins.
+- Edit your own profile from the profile page.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Persistent Login
+- Your session persists on refresh as long as your JWT is valid.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/2d0fa523-89b2-4a55-a3f7-ce8d0c354ed5) and click on Share -> Publish.
+## API Endpoints (Backend)
+- `POST /register` — Register a new user
+- `POST /login` — Login and receive JWT
+- `GET /user/profile` — Get current user profile
+- `PUT /user/profile` — Update current user profile
+- `GET /admin/dashboard` — Admin: view all users
+- `POST /admin/register` — Admin: register a new admin
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## Customization
+- Update the favicon and Open Graph image in `frontend/index.html`.
+- Tailwind and shadcn-ui for easy UI customization.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## License
+MIT

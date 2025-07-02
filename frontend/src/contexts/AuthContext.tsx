@@ -12,6 +12,7 @@ interface DecodedToken {
 
 interface AuthContextType {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   login: (email: string, password: string, isAdmin?: boolean) => Promise<void>;
   register: (
     email: string,
@@ -142,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const value = {
     user,
+    setUser,
     login,
     register,
     logout,

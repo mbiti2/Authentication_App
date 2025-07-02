@@ -160,6 +160,15 @@ const refreshAccessToken = async (): Promise<{ access_token: string }> => {
   return response.data;
 };
 
+export const updateUserProfile = async (data: {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+}) => {
+  const res = await apiClient.put('/user/profile', data);
+  return res.data;
+};
+
 export const authApi = {
   login,
   register,
@@ -169,7 +178,8 @@ export const authApi = {
   getAccessToken,
   getRefreshToken,
   clearTokens,
-  registerAdmin
+  registerAdmin,
+  updateUserProfile
 };
 
 export type { User, LoginResponse, RegisterResponse };

@@ -3,9 +3,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, LogOut, Mail, Calendar, Shield } from 'lucide-react';
+import { useState } from 'react';
+import { authApi } from '@/services/api';
 
 const ProfilePage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, setUser } = useAuth();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [form, setForm] = useState({
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   if (!user) return null;
 
@@ -15,6 +25,22 @@ const ProfilePage = () => {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError('');
+    try {
+      const updated = await authApi.updateUserProfile(form);
+      setUser(updated);
+      localStorage.setItem('user', JSON.stringify(updated));
+      setIsEditOpen(false);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -74,13 +100,63 @@ const ProfilePage = () => {
                 </div>
               </div>
               <div className="mt-6 flex justify-end">
-                <button className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200">
+                <button
+                  className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200"
+                  onClick={() => setIsEditOpen(true)}
+                >
                   Edit Profile
                 </button>
               </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Edit Profile Modal */}
+        {isEditOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md relative">
+              <button className="absolute top-2 right-2 text-blue-700" onClick={() => setIsEditOpen(false)}>&times;</button>
+              <h2 className="text-2xl font-bold mb-4 text-blue-900">Edit Profile</h2>
+              <form onSubmit={handleEdit} className="space-y-4">
+                <div>
+                  <label className="block text-blue-900 font-semibold mb-1">First Name</label>
+                  <input
+                    className="w-full rounded-lg border px-3 py-2"
+                    value={form.first_name}
+                    onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
+                    placeholder="First Name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-blue-900 font-semibold mb-1">Last Name</label>
+                  <input
+                    className="w-full rounded-lg border px-3 py-2"
+                    value={form.last_name}
+                    onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
+                    placeholder="Last Name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-blue-900 font-semibold mb-1">Email</label>
+                  <input
+                    className="w-full rounded-lg border px-3 py-2"
+                    value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="Email"
+                  />
+                </div>
+                {error && <div className="text-red-500">{error}</div>}
+                <button
+                  type="submit"
+                  className="w-full rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 shadow-lg"
+                  disabled={saving}
+                >
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 text-center text-sm text-blue-200">
           <p>Your session will expire after 10 minutes of inactivity</p>
