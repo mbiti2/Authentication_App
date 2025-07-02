@@ -10,7 +10,7 @@ use crate::models::{LoginRequest, LoginResponse, RegisterRequest, Role, User};
 use crate::AppState;
 
 #[derive(OpenApi)]
-#[openapi(paths(login), components(schemas(LoginRequest, LoginResponse)))]
+#[openapi(paths(login, register), components(schemas(LoginRequest, LoginResponse, RegisterRequest)))]
 pub struct AuthApi;
 
 #[utoipa::path(
@@ -78,54 +78,6 @@ pub async fn login(
 
 #[utoipa::path(
     post,
-    path = "/admin/register",
-    request_body = LoginRequest, // or a dedicated RegisterRequest
-    responses(
-        (status = 201, description = "Admin registered successfully", body = User),
-        (status = 403, description = "Forbidden")
-    ),
-    security(("api_key" = []))
-)]
-pub async fn register_admin(
-    State(state): State<AppState>,
-    Json(payload): Json<LoginRequest>, // consider creating a proper RegisterRequest
-) -> impl IntoResponse {
-    let mut users = state.users.lock().unwrap();
-    let user = users.iter().find(|u| u.email == payload.email);
-    if user.is_none() || user.unwrap().role != Role::Admin {
-        return (
-            StatusCode::FORBIDDEN,
-            Json(json!({ "error": "Admin access required" })),
-        )
-            .into_response();
-    }
-
-    if users.iter().any(|u| u.email == payload.email) {
-        return (
-            StatusCode::CONFLICT,
-            Json(json!({ "error": "Email already registered" })),
-        )
-            .into_response();
-    }
-
-    let hashed = bcrypt::hash(&payload.password, bcrypt::DEFAULT_COST).unwrap();
-    let new_user = User {
-        id: users.len() as i32 + 1,
-        email: payload.email.clone(),
-        first_name: "Admin".to_string(), // you'd want to pass these
-        last_name: "Account".to_string(),
-        password: hashed,
-        role: Role::Admin,
-    };
-
-    users.push(new_user.clone());
-
-    (StatusCode::CREATED, Json(new_user)).into_response()
-}
-
-
-#[utoipa::path(
-    post,
     path = "/register",
     request_body = RegisterRequest,
     responses(
@@ -137,6 +89,16 @@ pub async fn register(
     State(state): State<AppState>,
     Json(payload): Json<crate::models::RegisterRequest>,
 ) -> impl IntoResponse {
+    let mut users = state.users.lock().unwrap();
+
+    if users.iter().any(|u| u.email == payload.email) {
+        return (
+            StatusCode::CONFLICT,
+            Json(json!({"error": "Email already registered"})),
+        )
+            .into_response();
+    }
+    
     // In production, save to a database
     if payload.email.is_empty()
         || payload.password.is_empty()
@@ -159,7 +121,6 @@ pub async fn register(
     )
     .unwrap();
 
-    let mut users = state.users.lock().unwrap();
 
     let new_user = crate::models::User {
         id: users.len() as i32 + 1, // Simple ID generation
