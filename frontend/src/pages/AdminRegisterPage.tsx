@@ -82,9 +82,14 @@ const AdminRegisterPage = () => {
               </Alert>
             )}
             {success && (
-              <Alert variant="default">
-                <AlertDescription>{success}</AlertDescription>
-              </Alert>
+              <div className="flex flex-col items-center space-y-2">
+                <Alert variant="default">
+                  <AlertDescription>{success}</AlertDescription>
+                </Alert>
+                <Button type="button" className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200" onClick={() => navigate('/admin')}>
+                  Go to Admin Dashboard
+                </Button>
+              </div>
             )}
 
             <div className="space-y-2">

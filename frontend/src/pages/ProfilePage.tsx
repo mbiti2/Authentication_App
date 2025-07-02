@@ -27,6 +27,12 @@ const ProfilePage = () => {
             Logout
           </Button>
         </div>
+        {/* Admin dashboard button for admin users */}
+        {user.role === 'Admin' && (
+          <div className="mb-6 flex justify-end">
+            <a href="/admin" className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200">Go to Admin Dashboard</a>
+          </div>
+        )}
 
         <Card className="shadow-xl rounded-2xl backdrop-blur bg-white/80">
           <CardHeader className="pb-4">

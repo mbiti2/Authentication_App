@@ -104,10 +104,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
-  const login = async (email: string, password: string, isAdmin = false) => {
+  const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await authApi.login(email, password, isAdmin);
+      const response = await authApi.login(email, password);
       const token = (response as any).access_token || (response as any).token;
       if (!token) {
         throw new Error("No token received from login response");
@@ -116,11 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userInfo = response.user;
       setUser(userInfo);
       localStorage.setItem(USER_KEY, JSON.stringify(userInfo));
-      if (isAdmin) {
-        navigate("/admin");
-      } else {
-        navigate("/profile");
-      }
+      navigate("/profile");
     } catch (error) {
       console.error("Login error:", error);
       throw error;

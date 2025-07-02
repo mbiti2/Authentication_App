@@ -28,7 +28,6 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>("");
   const { login, isLoading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const {
     register,
@@ -43,7 +42,7 @@ const LoginPage = () => {
       console.log("Login form submitted with data:", data);
       setError("");
       console.log("Calling login function...");
-      await login(data.email, data.password, isAdmin);
+      await login(data.email, data.password);
       console.log("Login function completed successfully");
     } catch (err: any) {
       console.error("Login error:", err);
@@ -106,17 +105,6 @@ const LoginPage = () => {
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="admin"
-                checked={isAdmin}
-                onChange={() => setIsAdmin(!isAdmin)}
-                className="cursor-pointer accent-blue-600"
-              />
-              <label htmlFor="admin" className="cursor-pointer text-sm text-blue-900">Log in as Admin</label>
             </div>
 
             <Button type="submit" className="w-full rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200" disabled={isLoading}>
