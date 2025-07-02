@@ -32,7 +32,9 @@ const AdminDashboard = () => {
           <h1 className="text-2xl font-bold text-blue-900">Admin Dashboard</h1>
           <div className="flex gap-2 items-center">
             <Link to="/admin/register">
-              <Button>Register New Admin</Button>
+              <Button className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 px-6 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200">
+                Register New Admin
+              </Button>
             </Link>
             <Button onClick={logout} variant="outline" className="flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-2 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200">
               <LogOut size={16} />

@@ -28,6 +28,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const SESSION_TIMEOUT = Number(import.meta.env.VITE_SESSION_TIMEOUT_MS) || 10 * 60 * 1000; // Configurable via env
+const USER_KEY = 'user';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(() => {
     authApi.clearTokens();
     setUser(null);
+    localStorage.removeItem(USER_KEY);
     navigate('/login');
   }, [navigate]);
 
@@ -80,12 +82,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token = authApi.getAccessToken();
         if (token) {
-          const userProfile = await authApi.getUserProfile();
-          setUser(userProfile);
+          // Try to restore user from localStorage first
+          const storedUser = localStorage.getItem(USER_KEY);
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          } else {
+            const userProfile = await authApi.getUserProfile();
+            setUser(userProfile);
+            localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
+          }
         }
       } catch (error) {
         console.error('Failed to initialize auth:', error);
         authApi.clearTokens();
+        localStorage.removeItem(USER_KEY);
       } finally {
         setIsLoading(false);
       }
@@ -98,27 +108,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const response = await authApi.login(email, password, isAdmin);
-      console.log("Login response:", response);
-      console.log("Response keys:", Object.keys(response));
-      
-      // Handle both possible response structures
       const token = (response as any).access_token || (response as any).token;
-      console.log("Token:", token);
-      
       if (!token) {
         throw new Error("No token received from login response");
       }
-  
       localStorage.setItem("token", token);
-  
-      const decoded: DecodedToken = jwtDecode(token);
-      console.log("Decoded token:", decoded);
-  
-      // Use the user data from the login response instead of making a separate API call
       const userInfo = response.user;
-      console.log("User info from response:", userInfo);
       setUser(userInfo);
-      
+      localStorage.setItem(USER_KEY, JSON.stringify(userInfo));
       if (isAdmin) {
         navigate("/admin");
       } else {
@@ -137,6 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await authApi.register(email, password, firstName, lastName);
       setUser(response.user);
+      localStorage.setItem(USER_KEY, JSON.stringify(response.user));
       navigate('/profile');
     } catch (error) {
       throw error;
