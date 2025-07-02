@@ -63,6 +63,7 @@ async fn main() {
     let app = Router::new()
         .route("/admin/dashboard", get(protected::admin_dashboard))
         .route("/user/profile", get(protected::user_profile))
+        .route("/user/profile", axum::routing::put(protected::update_profile))
         .route("/admin/register", post(protected::register_admin))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
