@@ -47,7 +47,7 @@ pub struct LoginResponse {
     pub user: serde_json::Value,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateProfileRequest {
     pub first_name: Option<String>,
     pub last_name: Option<String>,
