@@ -36,7 +36,7 @@ const Index = () => {
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-blue-900 transition-all">Secure, Effortless Sign-In</h1>
-          <p className="text-lg md:text-xl text-blue-700 mb-8 transition-all">A modern authentication app for users and admins. Fast, secure, and beautifully simple.</p>
+          <p className="text-lg md:text-xl text-blue-700 mb-8 transition-all">A modern authentication app. Secure, and beautifully simple.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/login" className="rounded-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold py-3 px-8 shadow-lg hover:from-blue-600 hover:to-blue-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400">Sign In</a>
             <a href="/register" className="rounded-full border-2 border-blue-500 text-blue-700 font-bold py-3 px-8 bg-white/80 shadow-lg hover:bg-blue-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400">Register</a>
